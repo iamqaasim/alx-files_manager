@@ -9,7 +9,10 @@ const url = `mongodb://${HOST}:${PORT}`;
 class DBClient {
   constructor() {
     // Create a new instance of the MongoDB client
-    this.client = new MongoClient(url);
+    this.client = new MongoClient(url, {
+      useUnifiedTopology: true,
+      useNewUrlParser: true,
+    });
 
     // Connect to the MongoDB server and initialize the database
     this.client
