@@ -40,6 +40,8 @@ class RedisClient {
   }
 }
 
+// Create an instance of the RedisClient class
 const redisClient = new RedisClient();
 
+// Export the RedisClient instance to be used by other modules
 module.exports = redisClient;
