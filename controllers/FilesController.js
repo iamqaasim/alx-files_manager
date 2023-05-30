@@ -163,10 +163,46 @@ class FilesController {
       return res.json(files);
     } catch (error) {
       return res.status(500).json({ error: "Internal server error" });
+  }
+  static async getPublish(req, res) {
+    const token = req.header('X-Token');
+    const users = dbClient.db.collection('users');
+    const user = await users.findOne({ token });
+    if (!user) {
+      return req.status(401).json({ error: "Unauthorized" });
     }
+    const fileId = req.params.id;
+    const files = dbClient.db.collection('files');
+    const file = await files.findById(fileId);
+
+    if (!file) {
+      return res.status(404).json({ error: "Not found" });
+    }
+    file.isPublic = true;
+    await file.save();
+
+    return res.status(200).json(file);
+  }
+  static async putUnpublish(req, res) {
+    const token = req.header('X-Token');
+    const users = dbClient.db.collection('users');
+    const user = await users.findOne({ token });
+    if (!user) {
+      return req.status(401).json({ error: "Unauthorized" });
+    }
+    const fileId = req.params.id;
+    const files = dbClient.db.collection('files');
+    const file = await files.findById(fileId);
+
+    if (!file) {
+      return res.status(404).json({ error: "Not found" });
+    }
+    file.isPublic = false;
+    await file.save();
+
+    return res.status(200).json(file);
   }
 }
 
 	
-
 module.exports = FilesController;
