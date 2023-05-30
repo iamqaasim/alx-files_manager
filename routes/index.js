@@ -25,5 +25,8 @@ router.get("/disconnect", AuthController.getDisconnect);
 // Defining a GET route for "/users/me" and mapping it to the getMe method in the UsersController
 router.get("/users/me", UsersController.getMe);
 
+// Defining a POST route for "/files" and mapping it to the postUpload method in the FilesController
+router.post("/files", FilesController.postUpload);
+
 // Exporting the router module
 module.exports = router;
