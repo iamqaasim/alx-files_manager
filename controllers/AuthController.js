@@ -11,7 +11,6 @@ class AuthController {
     const buff = Buffer.from(userEmail, "base64");
     userEmail = buff.toString("ascii");
     const data = userEmail.split(":");
-
     // Check if data contains both email and password
     if (data.length !== 2) {
       response.status(401).json({ error: "Unauthorized" });
@@ -19,7 +18,6 @@ class AuthController {
     }
     const hashedPassword = sha1(data[1]);
     const users = dbClient.db.collection("users");
-
     // Find user in the database based on email and hashed password
     users.findOne(
       { email: data[0], password: hashedPassword },
@@ -40,10 +38,8 @@ class AuthController {
   static async getDisconnect(request, response) {
     const token = request.header("X-Token");
     const key = `auth_${token}`;
-
     // Retrieve user's ID from Redis cache
     const id = await redisClient.get(key);
-
     // Delete the token from Redis cache
     if (id) {
       await redisClient.del(key);

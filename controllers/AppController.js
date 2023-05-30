@@ -12,8 +12,8 @@ class AppController {
 
   // Handler for the "/stats" route
   static async getStats(request, response) {
-    const usersNum = await dbClient.nbUsers(); // Getting the number of users from the dbClient
-    const filesNum = await dbClient.nbFiles(); // Getting the number of files from the dbClient
+    const usersNum = await dbClient.nbUsers();
+    const filesNum = await dbClient.nbFiles();
     response.status(200).json({ users: usersNum, files: filesNum });
   }
 }
