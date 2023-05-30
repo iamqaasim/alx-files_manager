@@ -2,6 +2,8 @@
 import sha1 from "sha1";
 import Queue from "bull";
 import dbClient from "../utils/db";
+import { ObjectID } from "mongodb";
+import redisClient from '../utils/redis';
 
 // Create a new instance of the userQueue using Redis
 const userQueue = new Queue("userQueue", "redis://127.0.0.1:6379");
