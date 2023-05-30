@@ -39,6 +39,31 @@ class UsersController {
       }
     });
   }
+
+  static async getMe(request, response) {
+    const token = request.header("X-Token"); // Retrieve the token from the request header
+    const key = `auth_${token}`; // Construct the key for Redis lookup
+    const userId = await redisClient.get(key); // Retrieve the user ID from Redis using the key
+
+    if (userId) {
+      // Access the "users" collection in the database
+      const users = dbClient.db.collection("users");
+      // Create a MongoDB ObjectID using the user ID
+      const idObject = new ObjectID(userId);
+      // Find the user in the database by their ID
+      users.findOne({ _id: idObject }, (err, user) => {
+        // If a user is found
+        if (user) {
+          response.status(200).json({ id: userId, email: user.email });
+        } else {
+          response.status(401).json({ error: "Unauthorized" });
+        }
+      });
+    } else {
+      console.log("Hupatikani!");
+      response.status(401).json({ error: "Unauthorized" });
+    }
+  }
 }
 
 module.exports = UsersController;
