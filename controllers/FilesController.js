@@ -10,13 +10,22 @@ const fileQueue = new Queue("fileQueue", "redis://127.0.0.1:6379");
 
 class FilesController {
   static async getUser(request) {
+    // Extract token from request header
     const token = request.header("X-Token");
+    // Generate key for Redis lookup
     const key = `auth_${token}`;
+    // Retrieve user ID from Redis
     const userId = await redisClient.get(key);
+
     if (userId) {
+      // Access the "users" collection in the database
       const users = dbClient.db.collection("users");
+      // Create ObjectID using the retrieved user ID
       const idObject = new ObjectID(userId);
+      // Find the user with the specified ID
       const user = await users.findOne({ _id: idObject });
+
+      // If no user is found, return null
       if (!user) {
         return null;
       }
@@ -26,37 +35,56 @@ class FilesController {
   }
 
   static async postUpload(request, response) {
+    // Get the user from the request
     const user = await FilesController.getUser(request);
+
+    // If user is not found return 401 Unauthorized
     if (!user) {
       return response.status(401).json({ error: "Unauthorized" });
     }
+
+    // Extract necessary properties from the request body
     const { name } = request.body;
     const { type } = request.body;
     const { parentId } = request.body;
     const isPublic = request.body.isPublic || false;
     const { data } = request.body;
+
+    // If name is missing return 400 Minssing name
     if (!name) {
       return response.status(400).json({ error: "Missing name" });
     }
+
+    // If type is missing return 400 Minssing type
     if (!type) {
       return response.status(400).json({ error: "Missing type" });
     }
+
+    // If type is not "folder" and dta is missing return 400 Minssing data
     if (type !== "folder" && !data) {
       return response.status(400).json({ error: "Missing data" });
     }
 
+    // Access the "files" collection in the database
     const files = dbClient.db.collection("files");
+
     if (parentId) {
+      // Find the parent file in the database
       const idObject = new ObjectID(parentId);
       const file = await files.findOne({ _id: idObject, userId: user._id });
+
+      // If parent file is not found return 400 Parent not found
       if (!file) {
         return response.status(400).json({ error: "Parent not found" });
       }
+
+      // If parent file is not found in folder return 400 Parent is not found in folder
       if (file.type !== "folder") {
         return response.status(400).json({ error: "Parent is not a folder" });
       }
     }
     if (type === "folder") {
+      // Insert a new folder into the database
       files
         .insertOne({
           userId: user._id,
@@ -66,6 +94,7 @@ class FilesController {
           isPublic,
         })
         .then((result) =>
+          // Return 201 Created with the inserted folder details
           response.status(201).json({
             id: result.insertedId,
             userId: user._id,
@@ -79,20 +108,25 @@ class FilesController {
           console.log(error);
         });
     } else {
+      // Handle file upload
       const filePath = process.env.FOLDER_PATH || "/tmp/files_manager";
       const fileName = `${filePath}/${uuidv4()}`;
       const buff = Buffer.from(data, "base64");
-      // const storeThis = buff.toString('utf-8');
+
       try {
         try {
+          // Create the folder if it doesn't exist
           await fs.mkdir(filePath);
         } catch (error) {
           // pass. Error raised when file already exists
         }
+        // Write the file to disk
         await fs.writeFile(fileName, buff, "utf-8");
       } catch (error) {
         console.log(error);
       }
+
+      // Insert the file into the database
       files
         .insertOne({
           userId: user._id,
@@ -103,6 +137,7 @@ class FilesController {
           localPath: fileName,
         })
         .then((result) => {
+          // Return 201 Created with the inserted file details
           response.status(201).json({
             id: result.insertedId,
             userId: user._id,
