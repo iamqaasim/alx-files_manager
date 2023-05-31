@@ -181,42 +181,44 @@ class FilesController {
     return null;
   }
 
-  static async getPublish(req, res) {
-    const user = await FIlesController.getUser(req);
+  static async getPublish(request, response) {
+    const user = await FIlesController.getUser(request);
     if (!user) {
-      return req.status(401).json({ error: "Unauthorized" });
+      return response.status(401).json({ error: "Unauthorized" });
     }
-    const fileId = req.params.id;
+    const { id } = request.params;
     const files = dbClient.db.collection('files');
-    const file = await files.findById(fileId);
-
-    if (!file) {
-      return res.status(404).json({ error: "Not found" });
-    }
-    file.isPublic = true;
-    await file.save();
-
-    return res.status(200).json(file);
+    const idObject = new ObjectID(id);
+    const newValue = { $set: { isPublic: true } };
+    const options = { returnOriginal: false };
+    
+    files.findOneAndUpdate({ _id: idObject, userId: user._id }, newValue, options, (err, file) => {
+      if (!file.lastErrorObject.updateExisting) {
+        return response.status(404).json({ error: "Not found" });
+      }
+      return response.status(200).json(file.value);
+    });
+    return null;
   }
+
   static async putUnpublish(req, res) {
-    const token = req.header('X-Token');
-    const users = dbClient.db.collection('users');
-    const user = await users.findOne({ token });
+    const user = await FIlesController.getUser(request);
     if (!user) {
-      return req.status(401).json({ error: "Unauthorized" });
+      return response.status(401).json({ error: "Unauthorized" });
     }
-    const fileId = req.params.id;
+    const { id } = request.params;
     const files = dbClient.db.collection('files');
-    const file = await files.findById(fileId);
+    const idObject = new ObjectID(id);
+    const newValue = { $set: { isPublic: false } };
+    const options = { returnOriginal: false };
 
-    if (!file) {
-      return res.status(404).json({ error: "Not found" });
-    }
-    file.isPublic = false;
-    await file.save();
-
-    return res.status(200).json(file);
-  }
+    files.findOneAndUpdate({ _id: idObject, userId: user._id }, newValue, options, (err, file) => {
+      if (!file.lastErrorObject.updateExisting) {
+        return response.status(404).json({ error: "Not found" });
+      }
+      return response.status(200).json(file.value);
+    });
+    return null;
 }
 
 	
