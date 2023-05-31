@@ -122,52 +122,67 @@ class FilesController {
     }
     return null;
   }
-  static async getShow(req, res) {
-    try {
-      const {id} = req.params;
-      const token = req.header.authorization;
 
-      // Retrieve the user based on the token
-      const users = dbClient.db.collection('users');
-      const user = await users.findOne({token});
-      if (!user) {
-        return res.status(401).json({ error: "unauthorized" });
-      }
-      const files = dbClient.db.collection('files');
-      const file = await files.findOne({ _id: id, userId: user._id });
-      if (!file) {
-        return res.status(404).json({ error: "Not found" });
-      }
-      return res.json(file);
-    } catch (error) {
-      return res.status(500).json({ error: "Internal server error" });
+  static async getShow(request, response) {
+    const user = await FilesController.getUser(request);
+    if (!user) {
+      return response.status(401).json({error: "Unauthorized"})
     }
+    const fileId = request.params.id;
+    const files = dbClient.db.collection("files");
+    const idObject = new ObjectID(fileId);
+    const file = await files.findOne({ _id: idObject, userId: user._id });
+    if (!file) {
+      return response.status(401).json({error: "Not found" });
+    }
+    return response.status(200).json(file);
   }
-  static async getIndex(req, res) {
-    try {
-      const token = req.header('X-Token');
-      const parentId = req.query.parentId || 0;
-      const page = parseInt(req.query.page) || 0;
 
-      const users = dbClient.db.collection('users');
-      const user = await users.findOne({ token });
+  static async getIndex(request, response) {
+    const user = await FilesController.getUser(request);
       if (!user) {
         return res.status(401).json({ error: "unauthorized" });
       }
-      const files = dbClient.db.collection('files');
-      const file = await files.aggregate([
-        { $match:  { userId: user._id, parentId } },
-	{ $skip: page * 20 },
-	{ $limit: 20 }
-      ]);
-      return res.json(files);
-    } catch (error) {
-      return res.status(500).json({ error: "Internal server error" });
+    const { parentUd, page } = request.query;
+    const pageNo = page || 0;
+    const files = dbClient.db.collection("files");
+    let query;
+    if (!parentId) {
+      query = { userId: user._id };
+    } else {
+      query = { userId: user._id, parentId: ObjectID(parentId) };
+    }
+    files.aggreggate(
+      [
+        { $match: query },
+	{ $sort: { _id: -1 }},
+	{
+	  $facet: {
+	    metadata: [ { $count: "total" }, { $addFields: { page: parseInt(pageNo, 10) }}],
+            data : [ { $skip: 20 * parseInt(pageNo, 10) }, { $limit: 20 }],
+	  },
+	},
+      ],
+    ).toArray((err, result) =>  {
+      if (result) {
+        const final_result = result[0].data.map((file) => {
+	  const tmpfile = {
+	    ..file,
+	    id: file._id;
+	  };
+          delete tmpfile._id;
+          delete tmpfile.localPath;
+	  return tmpfile;
+	});
+	return response.status(200).json(final_result);
+      }
+      return response.status(404).json({ error: "Not found" });
+    });
+    return null;
   }
+
   static async getPublish(req, res) {
-    const token = req.header('X-Token');
-    const users = dbClient.db.collection('users');
-    const user = await users.findOne({ token });
+    const user = await FIlesController.getUser(req);
     if (!user) {
       return req.status(401).json({ error: "Unauthorized" });
     }
