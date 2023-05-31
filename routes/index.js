@@ -3,6 +3,7 @@ import { Router } from "express";
 import AppController from "../controllers/AppController";
 import UsersController from "../controllers/UsersController";
 import AuthController from "../controllers/AuthController";
+import FilesController from "../controllers/FilesController";
 
 // Creating a new router instance
 const router = Router();
@@ -27,18 +28,6 @@ router.get("/users/me", UsersController.getMe);
 
 // Defining a POST route for "/files" and mapping it to the postUpload method in the FilesController
 router.post("/files", FilesController.postUpload);
-
-// Defining a GET route for "/files/:id" and mapping it to the getShow method in the FilesController
-router.get("/files/:id", FilesController.getShow);
-
-// Defining a GET route for "/files" and mapping it to getIndex method in FilesController
-router.get("/files", FilesController.getIndex);
-
-// Defining a PUT route for "/files/:id/publish" and mapping it to getPublish method in FilesController
-router.put("/files/:id/publish", FilesController.putPublish);
-
-// Defining a PUT route for "/files/:id/unpublish" and mapping it to putUnpublish method in FilesController
-router.put("/files/:id/unpublish", FilesController.putUnpublish);
 
 // Exporting the router module
 module.exports = router;
