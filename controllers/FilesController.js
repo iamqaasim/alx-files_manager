@@ -167,8 +167,8 @@ class FilesController {
       if (result) {
         const final_result = result[0].data.map((file) => {
 	  const tmpfile = {
-	    ..file,
-	    id: file._id;
+	    ...file,
+	    id: file._id,
 	  };
           delete tmpfile._id;
           delete tmpfile.localPath;
