@@ -159,14 +159,21 @@ class FilesController {
   }
 
   static async getShow(request, response) {
+    // Get the user from the request
     const user = await FilesController.getUser(request);
+    // If no user is found, return an unauthorized error
     if (!user) {
       return response.status(401).json({ error: "Unauthorized" });
     }
+    // Get the fileId from the request parameters
     const fileId = request.params.id;
+    // Access the "files" collection in the database
     const files = dbClient.db.collection("files");
+    // Create an ObjectID instance for the fileId
     const idObject = new ObjectID(fileId);
+    // Find the file in the database based on its _id and userId
     const file = await files.findOne({ _id: idObject, userId: user._id });
+    // If no file is found, return a not found error
     if (!file) {
       return response.status(404).json({ error: "Not found" });
     }
@@ -174,34 +181,46 @@ class FilesController {
   }
 
   static async getIndex(request, response) {
+    // Get the user from the request
     const user = await FilesController.getUser(request);
+    // If the user is not found, return an error response
     if (!user) {
       return response.status(401).json({ error: "Unauthorized" });
     }
+    // Get the parentId and page from the request query
     const { parentId, page } = request.query;
     const pageNum = page || 0;
+    // Get the "files" collection from the database
     const files = dbClient.db.collection("files");
+    // Create query variable
     let query;
+    // If parentId is not provided, query files by userId only
+    // else if parentId is provided, query files by userId and parentId
     if (!parentId) {
       query = { userId: user._id };
     } else {
       query = { userId: user._id, parentId: ObjectID(parentId) };
     }
+    // Perform aggregation on the files collection
     files
       .aggregate([
-        { $match: query },
-        { $sort: { _id: -1 } },
+        { $match: query }, // Match documents based on the query
+        { $sort: { _id: -1 } }, // Sort the matched documents by _id in descending order
         {
           $facet: {
             metadata: [
-              { $count: "total" },
-              { $addFields: { page: parseInt(pageNum, 10) } },
+              { $count: "total" }, // Count the total number of matched documents
+              { $addFields: { page: parseInt(pageNum, 10) } }, // Add the current page number to the metadata
             ],
-            data: [{ $skip: 20 * parseInt(pageNum, 10) }, { $limit: 20 }],
+            data: [
+              { $skip: 20 * parseInt(pageNum, 10) }, // Skip documents based on the page number and limit
+              { $limit: 20 }, // Limit the number of documents to 20 per page
+            ],
           },
         },
       ])
       .toArray((err, result) => {
+        // Map over the data and create a new array with modified file objects
         if (result) {
           const final = result[0].data.map((file) => {
             const tmpFile = {
@@ -212,7 +231,6 @@ class FilesController {
             delete tmpFile.localPath;
             return tmpFile;
           });
-          // console.log(final);
           return response.status(200).json(final);
         }
         console.log("Error occured");
