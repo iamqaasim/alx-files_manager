@@ -29,5 +29,9 @@ router.get("/users/me", UsersController.getMe);
 // Defining a POST route for "/files" and mapping it to the postUpload method in the FilesController
 router.post("/files", FilesController.postUpload);
 
+router.get("/files/:id", FilesController.getShow);
+
+router.get("/files", FilesController.getIndex);
+
 // Exporting the router module
 module.exports = router;
