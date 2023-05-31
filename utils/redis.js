@@ -33,7 +33,7 @@ class RedisClient {
     await this.client.expire(key, time);
   }
 
-  // del key vale pair from redis server
+  // del key value pair from redis server
   async del(key) {
     const redisDel = promisify(this.client.del).bind(this.client);
     await redisDel(key);
