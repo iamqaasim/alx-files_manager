@@ -181,7 +181,7 @@ class FilesController {
     return null;
   }
 
-  static async getPublish(request, response) {
+  static async putPublish(request, response) {
     const user = await FIlesController.getUser(request);
     if (!user) {
       return response.status(401).json({ error: "Unauthorized" });
@@ -219,6 +219,7 @@ class FilesController {
       return response.status(200).json(file.value);
     });
     return null;
+  }
 }
 
 	
