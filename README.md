@@ -28,6 +28,8 @@ By the end of this project, you will:
 
 - **Authentication**: User authentication via token-based authentication.
 - **File Management**: Functionality to upload, list, view, and manage files.
+- **Controlers**: Logic that handles HTTP requests
+- **Routes**: Contains and maps API endpoints adn their corresponding controlers
 - **Thumbnail Generation**: Generate image thumbnails for file preview.
 - **Background Processing**: Use a background worker for processing tasks like generating thumbnails.
 - **Utils**: Helper functions are located in the `utils` folder for better code organization.
