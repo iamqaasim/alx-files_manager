@@ -1,6 +1,6 @@
 # File Upload Platform
 
-This project is a back-end platform for file uploads and management. It covers various backend technologies such as authentication, NodeJS, MongoDB, Redis, pagination, and background processing. By the end of this project, you'll be able to build a file upload service and understand how to integrate these technologies into a fully functioning platform.
+This project is a back-end platform for file uploads and management. It covers various backend technologies such as authentication, ExpressJS, MongoDB, Redis, pagination, and background processing. By the end of this project, you'll be able to build a file upload service and understand how to integrate these technologies into a fully functioning platform.
 
 ## Features
 
