@@ -1,67 +1,82 @@
-# File Management API
+# File Upload Platform
 
-This project is a back-end application designed to help you learn the key concepts of authentication, NodeJS, MongoDB, Redis, pagination, and background processing. The platform allows users to upload, view, and manage files, with several functionalities built using modern backend technologies.
-
-## Table of Contents
-- [Description](#description)
-- [Learning Objectives](#learning-objectives)
-- [Features](#features)
-- [Technologies](#technologies)
-- [Setup](#setup)
-- [Usage](#usage)
-- [Resources](#resources)
-- [Requirements](#requirements)
-- [Provided Files](#provided-files)
-- [License](#license)
-
-## Description
-
-The project aims to build a simple platform for users to upload and manage files. The back-end service handles user authentication, file operations, and background processing, with a focus on using Node.js and Express.
-
-### Key Features:
-- **User authentication** via token
-- **List all files** available in the system
-- **Upload new files** to the platform
-- **Change permission** of a file
-- **View files** directly from the platform
-- **Generate thumbnails** for image files
-
-This service is a simplified version of many file management platforms, built as a learning exercise to help you understand key back-end concepts and build a full-stack application from scratch.
-
-## Learning Objectives
-
-By the end of this project, you should be able to explain the following:
-
-- How to create an API using Express
-- How to authenticate users in your application
-- How to store and manage data in MongoDB
-- How to utilize Redis to store temporary data
-- How to set up and use a background worker for processing tasks
+This project is a back-end platform for file uploads and management. It covers various backend technologies such as authentication, NodeJS, MongoDB, Redis, pagination, and background processing. By the end of this project, you'll be able to build a file upload service and understand how to integrate these technologies into a fully functioning platform.
 
 ## Features
 
-- **User Authentication**: Secure your API using tokens for user login and access control.
-- **File Upload**: Allow users to upload files, with storage in MongoDB and Redis for temporary data.
-- **File Permissions**: Enable the modification of file permissions after upload.
-- **Thumbnail Generation**: Automatically create image thumbnails for quick previews.
-- **Pagination**: Support for listing files with pagination to optimize response times for large datasets.
+- **User Authentication**: Secure authentication using tokens.
+- **File Management**:
+  - List all files.
+  - Upload a new file.
+  - Change permissions of a file.
+  - View a file.
+  - Generate thumbnails for image files.
+  
+This platform mimics real-world services, serving as a learning tool to understand how to implement these features step by step.
 
-## Technologies
+## Learning Objectives
 
-- **NodeJS**: The runtime environment for executing JavaScript on the server.
-- **MongoDB**: NoSQL database for storing file metadata and other related information.
-- **Redis**: Key-value store for managing temporary data and background job queues.
-- **Bull**: Background processing library used for handling background tasks like image thumbnail generation.
-- **Express**: Web framework for building the API.
-- **Mocha**: Test framework for writing and running unit tests.
-- **Nodemon**: Development tool to automatically restart the server on code changes.
-- **Mime-Types**: Utility for handling file types.
+By the end of this project, you will:
+
+- Know how to create an API with Express.
+- Understand how to authenticate users.
+- Be able to store data in MongoDB.
+- Understand how to store temporary data in Redis.
+- Be able to set up and use a background worker.
+
+## Project Structure
+
+- **Authentication**: User authentication via token-based authentication.
+- **File Management**: Functionality to upload, list, view, and manage files.
+- **Thumbnail Generation**: Generate image thumbnails for file preview.
+- **Background Processing**: Use a background worker for processing tasks like generating thumbnails.
+- **Utils**: Helper functions are located in the `utils` folder for better code organization.
+
+## Resources
+
+### Read/Watch
+
+- [Node.js getting started](https://nodejs.org/en/docs/guides/)
+- [Process API Documentation](https://nodejs.org/dist/latest-v12.x/docs/api/process.html)
+- [Express getting started](https://expressjs.com/en/starter/installing.html)
+- [Mocha Documentation](https://mochajs.org/)
+- [Nodemon Documentation](https://www.npmjs.com/package/nodemon)
+- [MongoDB](https://www.mongodb.com/)
+- [Bull (Background jobs)](https://github.com/OptimalBits/bull)
+- [Image Thumbnail Generation](https://www.npmjs.com/package/sharp)
+- [Mime-Types](https://www.npmjs.com/package/mime-types)
+- [Redis](https://redis.io/)
+
+## Requirements
+
+- **Editors**: You can use any of the following editors:
+  - vi
+  - vim
+  - emacs
+  - Visual Studio Code
+- **Operating System**: All files will be interpreted on Ubuntu 18.04 LTS using Node.js (version 12.x.x).
+- **File Formatting**:
+  - Ensure all files end with a new line.
+  - Ensure all your JavaScript files use the `.js` extension.
+  - Code will be verified using ESLint, so follow coding standards.
 
 ## Setup
 
-To get started with this project, follow these steps:
+1. Clone this repository to your local machine.
+2. Install the dependencies:
+    ```bash
+    $ npm install
+    ```
+3. Set up the environment variables for MongoDB, Redis, and other services.
+4. Run the application:
+    ```bash
+    $ npm run start
+    ```
 
-1. **Clone the repository:**
-   ```bash
-   git clone <repo-url>
-   cd <project-directory>
+## Provided Files
+
+- `package.json`: Contains the project's dependencies and scripts.
+- `.eslintrc.js`: ESLint configuration for code style checks.
+- `babel.config.js`: Babel configuration (if required for transpiling).
+  
+Ensure you run `$ npm install` to install all necessary dependencies listed in the `package.json`.
